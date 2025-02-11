@@ -1,0 +1,9 @@
+.activo {
+    background-color: lightgreen;
+    border: 2px solid green;
+}
+
+.resaltado {
+    font-weight: bold;
+    text-shadow: 2px 2px 4px gray;
+}
