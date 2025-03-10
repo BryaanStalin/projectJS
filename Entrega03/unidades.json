@@ -1,0 +1,26 @@
+[
+    {
+        "NOMBRE": "LONGITUD",
+        "CONVERSIONES": [
+            "METROS A KILÓMETROS",
+            "KILÓMETROS A MILLAS",
+            "PIES A METROS"
+        ]
+    },
+    {
+        "NOMBRE": "PESO",
+        "CONVERSIONES": [
+            "KILOGRAMOS A LIBRAS",
+            "LIBRAS A GRAMOS",
+            "TONELADAS A KILOGRAMOS"
+        ]
+    },
+    {
+        "NOMBRE": "TEMPERATURA",
+        "CONVERSIONES": [
+            "CELSIUS A FAHRENHEIT",
+            "FAHRENHEIT A CELSIUS",
+            "KELVIN A CELSIUS"
+        ]
+    }
+]

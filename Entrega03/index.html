@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- AGREGO BOOTSTRAP EN SU ÚLTIMA VERSIÓN PARA ESTILOS CSS -->
+    <!-- AGREGO BOOTSTRAP 5.3 Y ESTILOS DEL TOASTIFY -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <!-- AGREGO UN ICONO PARA LA VISTA DEL ENTREGABLE -->
     <link rel="icon" href="img/icono.svg" type="image/x-icon"> 
     <!-- TÍTULO DEL HEADER -->
-    <title>ENTREGABLE 02 JS FLEX</title>
+    <title>PROYECTO FINAL JS FLEX</title>
     <!-- ALGUNOS ESTILOS MAS-->
     <style>
         .card-header {
@@ -16,6 +17,9 @@
             text-align: justify;
         }
     </style>
+    <!-- CARGAMOS LIBRERIAS PARA ALERTAS Y NOTIFICACIONES-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 <body class="bg-light bg-gradient">
     <div class="container mt-2">
@@ -29,15 +33,12 @@
                     <form id="conversion-form" class="mt-4">
                         <div class="mb-3">
                             <label for="value" class="form-label">Ingrese su Nombre:</label>
-                            <input type="text" id="nombreUser" class="form-control" placeholder="Ingrese su nombre" required>
+                            <input type="text" id="nombreUser" class="form-control" placeholder="Ingrese su nombre">
                         </div>
                         <div class="mb-3">
                             <label for="categoria" class="form-label">Seleccione la Categoria:</label>
                             <select id="categoria" class="form-select">
                                 <option value="0">Seleccione</option>
-                                <option value="LONGITUD">LONGITUD</option>
-                                <option value="PESO">PESO</option>
-                                <option value="TEMPERATURA">TEMPERATURA</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -48,7 +49,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="value" class="form-label">Valor a convertir:</label>
-                            <input type="number" id="valorUnidad" class="form-control" placeholder="Ingresa el valor" required>
+                            <input type="number" id="valorUnidad" class="form-control" placeholder="Ingresa el valor">
                         </div>
                         <div class="mb-3 text-center">
                             <button id="convertirUnidad" class="btn btn-primary w-50">REALIZAR CONVERSIÓN</button>
@@ -60,7 +61,7 @@
             <div class="col-4">
                 <div class="container mt-5" id="contenedor_conversiones" style="border: solid; border-color:rgb(75, 71, 143);">
                     <h1 class="text-center text-danger" id="saludo_historial">HISTORIAL</h1>
-                    <small class="h7">A continuación, se presenta la lista de conversiones:</small>                
+                    <small class="h7">A continuación, se presenta la lista de conversiones:</small>
                 </div>
             </div>
         </div>

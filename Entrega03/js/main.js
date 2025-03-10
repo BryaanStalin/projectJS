@@ -1,138 +1,39 @@
-/*
-
-! Entrega N°2
-! ===========
-TODO: Mostrar tu simulador JS interactuando con HTML
-? Integrar las herramientas JS aprendidas hasta aquí
-    !  Objetivos específicos :
-    * Modifica su estructura anterior, integrando JS con JavaScript mediante el uso de DOM y Eventos.
-    * Programa el circuito de interacción completo de la lógica de tu aplicación web, agregando las nuevas herramientas JS aprendidas
-    * Guarda tus objetos o arrays de objetos en localstorage para dejar disponible los datos agregados por el usuario ejemplo(los productos en un carrito de compras)
-    ! Se debe entregar :
-    * Documento HTML + CSS (al menos uno)
-    * Archivo(s) JS referenciado(s) en el HTML
-    ! Formato :
-    * Archivo en formato .ZIP con la carpeta y los archivos del proyecto. 
-    * Debe contener el nombre “Entregable2+Apellido”
-    * Guarda los archivos JS, CSS y JSON en subcarpetas
-? Sugerencias, en esta etapa debes integrar:
-    !JavaScript :
-    * Los algoritmos de JS deben ser invocados desde HTML, e interactuar con el contenido web, creando HTML, leyendo y procesando datos ingresados desde formularios, inputs, etc.
-    !HTML : 
-    * Elimina toda interacción con la Consola JS, convirtiendo esta interacción en el DOM del HTML.
-    !CSS : 
-    * Termina de diseñar la estética visual necesaria en tu webapp con CSS y/o un framework CSS.
-? Criterios de evaluación
-    ! Funcionalidad :
-    * Se simula uno o más flujos de trabajo en términos de entrada, proceso y salida.
-    * La funcionalidad es apropiada al contexto del simulador. 
-    * Carece de errores de cómputo durante el procesamiento.
-    ! Interactividad :
-    * Se capturan entradas ingresadas por el usuario mediante eventos. 
-    * Se efectúan una o más salidas por HTML modificando el DOM. 
-    * Existe un control de ingreso de entradas y las salidas son coherentes en relación a los datos ingresados.
-    ! Escalabilidad :
-    * Se declaran funciones con parámetros para definir instrucciones con una tarea específica. 
-    * Se emplean arrays para agrupar valores relacionados. Se definen objetos con propiedades y métodos relevantes al contexto. 
-    * Se establece un criterio homogéneo para la detección de eventos.
-    * Se almacena en storage datos relevantes generados durante la simulación
-    !Integridad  :
-    * Se define el código JavaScript en un archivo .js, referenciándolo correctamente desde el HTML. 
-    * Se evitan métodos prompt() y alert() para evitar interrupciones durante el procesamiento y actualización del DOM. 
-    * La información estática del proyecto se emplea adecuadamente
-    !Legibilidad :
-    * Los nombres de variables. funciones y objetos son significativos para el contexto. 
-    * Las instrucciones se escriben de forma legible y se emplean comentarios oportunos. 
-    * El código fuente es ordenado en términos de declaración y secuencia.
-
-*/
-
 // ?DECLARAMOS LAS VARIABLES GLOBALES
 const btnConvertir = document.getElementById('convertirUnidad');
 const resultadoDiv = document.getElementById('contenedor_conversiones');
 const conversionSelect = document.getElementById('unidadesConversion');
 const categoriaSelect = document.getElementById('categoria');
 const saludoHistorial = document.getElementById('saludo_historial');
+const selectCategoria = document.getElementById("categoria");
+const nombreJSON = 'unidades.json'
+let dataCategorias = [];
+let dataMedidas = [];
 
-// ?CREACIÓN DEL ARRAY PARA CARGAR OPCIONES DE CONVERSION
-const MEDIDAS = [
-    {
-        NOMBRE : 'LONGITUD',
-        CONVERSIONES : [
-        'METROS A KILÓMETROS',
-        'KILÓMETROS A MILLAS',
-        'PIES A METROS'
-        ]
-    },
-    {
-        NOMBRE : 'PESO',
-        CONVERSIONES : [
-        'KILOGRAMOS A LIBRAS',
-        'LIBRAS A GRAMOS',
-        'TONELADAS A KILOGRAMOS'
-        ]
-    },
-    {
-        NOMBRE : 'TEMPERATURA',
-        CONVERSIONES : [
-        'CELSIUS A FAHRENHEIT',
-        'FAHRENHEIT A CELSIUS',
-        'KELVIN A CELSIUS'
-        ]
-    },
-];
+//Funcion para cargar combo de Categorias de conversión
+function cargarCategorias() {
+    fetch(nombreJSON)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach((item, index) => {
+                let option = document.createElement("option");
+                option.value = item.NOMBRE;
+                option.textContent = item.NOMBRE;
+                selectCategoria.appendChild(option);
+            });
+        })
+        .catch(error => console.error("Error al cargar JSON:", error));
+}
 
-// Cargamos todo el DOM, y la función para cargar historial de LocalStorage
-document.addEventListener('DOMContentLoaded', cargarHistorial);
-
-// Evento para cargar combo de opciones de conversión
-categoriaSelect.addEventListener('change', function () {
-    const categoriaSeleccionada = categoriaSelect.value;
-    conversionSelect.innerHTML = ''; // Limpiar opciones anteriores
-
-    if (categoriaSeleccionada !== '0') {
-        const opciones = MEDIDAS.find(item => item.NOMBRE === categoriaSeleccionada).CONVERSIONES;
-        opciones.forEach(conversion => {
-        const option = document.createElement('option');
-        option.value = conversion;
-        option.textContent = conversion;
-        conversionSelect.appendChild(option);
-    });
-    } else {
-        conversionSelect.innerHTML = '<option value="0">Seleccione una opción</option>';
-    }
-});
-
-// Evento para realizar conversión y mostrar en div de Historial de conversiones
-document.getElementById('conversion-form').addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    const nombreUsuario = document.getElementById('nombreUser').value;
-    const valorUnidad = parseFloat(document.getElementById('valorUnidad').value);
-    const categoriaSeleccionada = categoriaSelect.value;
-    const conversionSeleccionada = conversionSelect.value;
-
-    if (isNaN(valorUnidad)) {
-        alert('Por favor, ingresa un valor válido.');
-        return;
-    }
-
-    let resultado = calcularResultado(conversionSeleccionada, valorUnidad);
-
-    const nuevaConversion = {
-        nombreUsuario,
-        categoria: categoriaSeleccionada,
-        conversion: conversionSeleccionada,
-        valorOriginal: valorUnidad,
-        resultado: resultado.toFixed(2)
-    };
-
-    mostrarConversionEnHistorial(nuevaConversion);
-    guardarEnHistorial(nuevaConversion);
-
-    document.getElementById('conversion-form').reset();
-    conversionSelect.innerHTML = '<option value="0">Seleccione una opción</option>';
-});
+//Funcion para traer los datos del JSON de conversiones de unidades
+function cargarOpcionesCategoria() {
+    fetch('unidades.json')
+    .then(response => response.json())
+    .then(data => {
+        dataMedidas = data;
+        //console.log(dataMedidas);
+    })
+    .catch(error => console.error('Error al cargar el JSON:', error));
+}
 
 // Funcion para cargar Historial de conversiones desde LocalStorage
 function cargarHistorial() {
@@ -197,6 +98,17 @@ function eliminarDeHistorial(conversion) {
     let historial = JSON.parse(localStorage.getItem('historialConversiones')) || [];
     historial = historial.filter(item => item.valorOriginal !== conversion.valorOriginal || item.conversion !== conversion.conversion);
     localStorage.setItem('historialConversiones', JSON.stringify(historial));
+
+    Toastify({
+        text: "Conversión eliminada del historial",
+        duration: 2000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        style: {
+            background: "#ff0000",
+        },
+    }).showToast();
 }
 
 // Creación del Botón para limpiar todo el historial
@@ -205,13 +117,124 @@ limpiarHistorialBtn.textContent = 'LIMPIAR TODO EL HISTORIAL';
 limpiarHistorialBtn.classList.add('btn', 'btn-warning', 'w-100', 'mt-3');
 resultadoDiv.appendChild(limpiarHistorialBtn);
 
-// Evento para limpiar historial de conversiones
-limpiarHistorialBtn.addEventListener('click', function () {
-    localStorage.removeItem('historialConversiones');
-    resultadoDiv.innerHTML = ''; // Limpia el contenedor
-    saludoHistorial.textContent = 'Historial vacío';
+// Cargamos todo el DOM, y las funciones para cargar historial Conversiones, cargar combo de Categorias y opciones de Conversión 
+document.addEventListener('DOMContentLoaded', () => {
+    cargarHistorial();
+    cargarCategorias();
+    cargarOpcionesCategoria();
 });
 
+// Evento para cargar combo de Opciones de conversión
+categoriaSelect.addEventListener('change', function () {
+    const categoriaSeleccionada = categoriaSelect.value; //console.log(categoriaSeleccionada);
+    conversionSelect.innerHTML = ''; // Limpiar opciones anteriores
 
+    if (categoriaSeleccionada !== '0') {
+        const opciones = dataMedidas.find(item => item.NOMBRE === categoriaSeleccionada).CONVERSIONES;
+        conversionSelect.innerHTML = '<option value="0">Seleccione una opción</option>';
+        opciones.forEach(conversion => {
+            const option = document.createElement('option');
+            option.value = conversion;
+            option.textContent = conversion;
+            conversionSelect.appendChild(option);
+    });
+    } else {
+        conversionSelect.innerHTML = '<option value="0">Seleccione una opción</option>';
+    }
+});
 
+// Evento para realizar conversión y mostrar en div de Historial de conversiones
+document.getElementById('conversion-form').addEventListener('submit', function (event) {
+    event.preventDefault();
 
+    const nombreUsuario = document.getElementById('nombreUser').value;
+    const valorUnidad = parseFloat(document.getElementById('valorUnidad').value);
+    const categoriaSeleccionada = categoriaSelect.value;
+    const conversionSeleccionada = conversionSelect.value;
+
+    if (nombreUsuario.trim() === "") {
+        Swal.fire({
+            icon: 'error',
+            title: 'Falta el nombre',
+            text: 'Por favor, ingrese su nombre antes de continuar.',
+        });
+        return;
+    }
+    
+    if (categoriaSeleccionada === "0") {
+        Swal.fire({
+            icon: 'error',
+            title: 'Seleccione una categoría',
+            text: 'Debe elegir una categoría antes de continuar.',
+        });
+        return;
+    }
+    
+    if (conversionSeleccionada === "0") {
+        Swal.fire({
+            icon: 'error',
+            title: 'Seleccione una opción de conversión',
+            text: 'Debe elegir una de las opciones de conversión antes de continuar.',
+        });
+        return;
+    }
+    
+    if (isNaN(valorUnidad)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Valor inválido',
+            text: 'Ingrese un número válido para la conversión.',
+        });
+        return;
+    }
+
+    let resultado = calcularResultado(conversionSeleccionada, valorUnidad);
+
+    const nuevaConversion = {
+        nombreUsuario,
+        categoria: categoriaSeleccionada,
+        conversion: conversionSeleccionada,
+        valorOriginal: valorUnidad,
+        resultado: resultado.toFixed(2)
+    };
+
+    mostrarConversionEnHistorial(nuevaConversion);
+    guardarEnHistorial(nuevaConversion);
+
+    Toastify({
+        text: "Conversión guardada en historial!",
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        style: {
+            background: "#28a745",
+        },
+    }).showToast();
+
+    //Limpiamos el formulario
+    document.getElementById('conversion-form').reset();
+    conversionSelect.innerHTML = '<option value="0">Seleccione una opción</option>';
+});
+
+// Evento para limpiar historial de conversiones
+document.getElementById('contenedor_conversiones').addEventListener('click', function (event) {
+    if (event.target.classList.contains('btn-warning')) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción eliminará todo el historial.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem('historialConversiones');
+                saludoHistorial.textContent = 'Historial vacío';
+                resultadoDiv.innerHTML = '';
+                Swal.fire('Historial Eliminado', '', 'success');
+            }
+        });
+    }
+});
